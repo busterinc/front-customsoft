@@ -139,7 +139,19 @@ export async function DownloadXlsApi (type) {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'activity_log.xlsx');
+    
+    // Obteniendo la fecha y la hora actual
+    const now = new Date();
+    const timestamp = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '_' + now.getHours() + '-' + now.getMinutes() + '-' + now.getSeconds();
+
+    const newName = type === 'log' ? 'activityLog' : 'docList'
+    console.log('newName................', newName)
+    // Nombre del archivo con la fecha y la hora
+    const filename = `${newName}_${timestamp}.xlsx`;
+
+    // Asignar el nombre de descarga al enlace
+    link.setAttribute('download', filename);  // link.setAttribute('download', `${type}_.xlsx`);
+
     document.body.appendChild(link);
     link.click();
     link.remove();
