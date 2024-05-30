@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { TestApi, GetTokenApi, GetSignInApi, UpFileApi, GetDocsApi } from './api'
+import { TestApi, GetTokenApi, GetSignInApi, UpFileApi, GetDocsApi, DelDocsApi, EditDocsApi, DownloadXlsApi } from './api'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -65,7 +65,7 @@ export const useAppStore = defineStore('app', {
         }
         return response
       } catch (error) {
-        console.error('Error fetching token:', error)
+        console.error('Error signin:', error)
         return error
       }
     },
@@ -81,7 +81,7 @@ export const useAppStore = defineStore('app', {
         console.log('this.dataSession !!!!!!!!!!!!!', this.dataSession)
         return resp
       } catch (error) {
-        console.error('Error fetching token:', error)
+        console.error('Error to upload file:', error)
         return error
       }
     },
@@ -91,13 +91,41 @@ export const useAppStore = defineStore('app', {
 			console.log('this.profileId ;;;;;;;;;;;;;;;', this.profileId)
 
       try {
-        const payload = (this.profileId && this.profileId) ? await GetDocsApi(this.token, this.profileId) : null
+        const payload = (this.token && this.profileId) ? await GetDocsApi(this.token, this.profileId) : null
         console.log('payload ;;;;;;;;;;;;;;;', payload)
         this.docList = payload.data //Llenamos state con valor de respuesta d elista de doucmentos
         console.log('this.docList ;;;;;;;;;;;;;;;', this.docList)
         return payload
       } catch (error) {
-        console.error('Error fetching token:', error)
+        console.error('Error al traer lista de docs:', error)
+        return error
+      }
+    },
+    async DelDocsAct (docId) {
+      console.log('|||||||||||||| ENTRA DelDocsAct |||||||||||||||||||')
+			console.log('this.token |||||||||||||||||||||', this.token)
+			console.log('docId |||||||||||||||||||||', docId)
+
+      try {
+        const payload = (this.token && docId) ? await DelDocsApi(this.token, docId) : null
+        console.log('payload |||||||||||||||||||||||||', payload)
+        return payload
+      } catch (error) {
+        console.error('Error deleting file:', error)
+        return error
+      }
+    },
+    async EditDocsAct (docId, file) {
+      console.log(';;;;;;;;;;;;;;; ENTRA EditDocsAct ;;;;;;;;;;;;;;;')
+			console.log('this.token ;;;;;;;;;;;;;;;', this.token)
+			console.log('docId ;;;;;;;;;;;;;;;', docId)
+
+      try {
+        const payload = (this.token && docId) ? await EditDocsApi(this.token, docId) : null
+        console.log('payload ;;;;;;;;;;;;;;;', payload)
+        return payload
+      } catch (error) {
+        console.error('Error editing token:', error)
         return error
       }
     },
@@ -118,5 +146,13 @@ export const useAppStore = defineStore('app', {
 			this.user = localStorage.removeItem('user');
 			this.profileId = localStorage.removeItem('id');
     },
+    async DownloadXlsAct(type) {
+      try {
+        const payload = await DownloadXlsApi(type)
+        console.log('payload°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°', payload)
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+    }
   }
 })
