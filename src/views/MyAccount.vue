@@ -2,19 +2,19 @@
     <NavBar/>
     <v-card>
         <v-card-title>Datos Personales</v-card-title>
-        <v-card-text v-if="user">
+        <v-card-text v-if="userSession">
             <v-row>
                 <v-col cols="12" md="6">
-                    <v-text-field v-model="user.key" label="Id" readonly></v-text-field>
+                    <v-text-field v-model="userSession.data.key" label="Id" readonly></v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
-                    <v-text-field v-model="user.name" label="Nombre" readonly></v-text-field>
+                    <v-text-field v-model="userSession.data.name" label="Nombre" readonly></v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
-                    <v-text-field v-model="user.email" label="Email" readonly></v-text-field>
+                    <v-text-field v-model="userSession.data.email" label="Email" readonly type="email"></v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
-                    <v-text-field v-model="user.password" label="Contraseña" readonly></v-text-field>
+                    <v-text-field v-model="userSession.data.password" label="Contraseña" readonly type="password"></v-text-field>
                 </v-col>
             </v-row>
         </v-card-text>
@@ -33,10 +33,10 @@ import { storeToRefs } from 'pinia'
 export default defineComponent({
     setup() {
         const store = useAppStore();
-      	const { user } = storeToRefs(store);
+      	const { userSession } = storeToRefs(store);
     
         return {
-            user
+            userSession
         };
     }
 });

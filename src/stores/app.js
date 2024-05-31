@@ -13,13 +13,14 @@ import {
 export const useAppStore = defineStore('app', {
   state: () => ({
     dataSession: JSON.parse(localStorage.getItem('dataSession')) || [],
+    userSession: JSON.parse(localStorage.getItem('userSession')) || [],
     test: null,
     isLogIn: localStorage.getItem('isLogIn') || false,
     profileId: localStorage.getItem('profileId') || null,
     superUser: localStorage.getItem('superUser') || null,
-    token: localStorage.getItem('token') || null,
+    tokenSession: localStorage.getItem('tokenSession') || null,
     docList: JSON.parse(localStorage.getItem('docList')) || [],
-    user: JSON.parse(localStorage.getItem('user')) || []
+    userEmail: localStorage.getItem('userEmail') || null,
   }),
   // state: () => ({
   //   docList: [],
@@ -50,55 +51,37 @@ export const useAppStore = defineStore('app', {
         localStorage.setItem('dataSession', JSON.stringify(data))
         console.log('this.dataSession &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', this.dataSession)
         this.superUser = data.users.email
-        localStorage.setItem('superUser', this.superUser)
-        this.token = data.token
-        localStorage.setItem('token', this.token)
+        localStorage.setItem('superUser', data.users.email)
+        this.tokenSession = data.token
+        localStorage.setItem('tokenSession', data.token)
         return data
       } catch (error) {
         console.error('Error fetching token:', error)
         return error
       }
     },
-		// async GetTokenAct () {
-    //   console.log('&&&&&&&&&&&&&& ENTRA GetTokenAct &&&&&&&&&&&&&&&&&')
-    //   try {
-    //     const data = await GetTokenApi()
-    //     console.log('data &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', data)
-    //     this.dataSession = data
-    //     console.log('this.dataSession &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', this.dataSession)
-		// 		this.superUser = data.users.email
-    //   	this.token = data.token
-    //     localStorage.setItem('token', this.token);
 
-    //     return data
-    //   } catch (error) {
-    //     console.error('Error fetching token:', error)
-    //     return error
-    //   }
-    // },
 		async GetSignInAct (email, pass) {
       console.log('------------- ENTRA GetSignInAct --------------')
 			console.log('email -----------------------------', email)
 			console.log('pass -----------------------------', pass)
 
       try {
-				console.log('this.token -----------------------------', this.token)
-        const response = this.token ? await GetSignInApi(this.token, email, pass) : null
+				console.log('this.tokenSession -----------------------------', this.tokenSession)
+        const response = this.tokenSession ? await GetSignInApi(this.tokenSession, email, pass) : null
+        localStorage.setItem('userSession', JSON.stringify(response));
         console.log('response -----------------------------', response)
 				if (response.data) {
 					console.log('response.data.key -----------------------------', response.data.key)
 					this.isLogIn = response.data.key ? true : false
-          localStorage.setItem('logged', this.isLogIn);
 					console.log('this.isLogIn -----------------------------', this.isLogIn)
 					this.profileId = response.data.key
-          localStorage.setItem('id', this.profileId);
-					this.user = response.data
-          localStorage.setItem('user', JSON.stringify(this.user))
+					this.userEmail = response.data
       		
-      		
-      		
-          
-          console.log('response.data -----------------------------', response.data)
+      		localStorage.setItem('profileId', response.data.key);
+      		localStorage.setItem('isLogIn', response.data.key ? true : false);
+          localStorage.setItem('userEmail', response.data.email);
+          console.log('response.data.email -----------------------------', response.data.email)
 				} else {
           console.log('response.error -----------------------------', response.error)
           return response.error
@@ -112,10 +95,10 @@ export const useAppStore = defineStore('app', {
     async UpFileAct (file) {
       console.log('!!!!!!!!!!!! ENTRA UpFileAct !!!!!!!!!!!!!!!')
 			console.log('file !!!!!!!!!!!!!', file)
-			console.log('this.token !!!!!!!!!!!!!', this.token)
+			console.log('this.tokenSession !!!!!!!!!!!!!', this.tokenSession)
 
       try {
-        const resp = this.token && this.profileId ? await UpFileApi(file, this.token, this.profileId) : null
+        const resp = this.tokenSession && this.profileId ? await UpFileApi(file, this.tokenSession, this.profileId) : null
         console.log('resp !!!!!!!!!!!!!!!!!!!!!!!', resp)
         this.dataSession = resp.data
         console.log('this.dataSession !!!!!!!!!!!!!', this.dataSession)
@@ -127,12 +110,13 @@ export const useAppStore = defineStore('app', {
     },
     async GetDocsAct () {
       console.log(';;;;;;;;;;;;;;; ENTRA GetDocsAct ;;;;;;;;;;;;;;;')
-			console.log('this.token ;;;;;;;;;;;;;;;', this.token)
+			console.log('this.tokenSession ;;;;;;;;;;;;;;;', this.tokenSession)
 			console.log('this.profileId ;;;;;;;;;;;;;;;', this.profileId)
 
       try {
-        const payload = (this.token && this.profileId) ? await GetDocsApi(this.token, this.profileId) : null
+        const payload = (this.tokenSession && this.profileId) ? await GetDocsApi(this.tokenSession, this.profileId) : null
         console.log('payload ;;;;;;;;;;;;;;;', payload)
+        localStorage.setItem('docList', JSON.stringify(payload.data));
         this.docList = payload.data //Llenamos state con valor de respuesta d elista de doucmentos
         console.log('this.docList ;;;;;;;;;;;;;;;', this.docList)
         return payload
@@ -143,11 +127,11 @@ export const useAppStore = defineStore('app', {
     },
     async DelDocsAct (docId) {
       console.log('|||||||||||||| ENTRA DelDocsAct |||||||||||||||||||')
-			console.log('this.token |||||||||||||||||||||', this.token)
+			console.log('this.tokenSession |||||||||||||||||||||', this.tokenSession)
 			console.log('docId |||||||||||||||||||||', docId)
 
       try {
-        const payload = (this.token && docId) ? await DelDocsApi(this.token, docId) : null
+        const payload = (this.tokenSession && docId) ? await DelDocsApi(this.tokenSession, docId) : null
         console.log('payload |||||||||||||||||||||||||', payload)
         return payload
       } catch (error) {
@@ -157,11 +141,11 @@ export const useAppStore = defineStore('app', {
     },
     async EditDocsAct (docId, file) {
       console.log(';;;;;;;;;;;;;;; ENTRA EditDocsAct ;;;;;;;;;;;;;;;')
-			console.log('this.token ;;;;;;;;;;;;;;;', this.token)
+			console.log('this.tokenSession ;;;;;;;;;;;;;;;', this.tokenSession)
 			console.log('docId ;;;;;;;;;;;;;;;', docId)
 
       try {
-        const payload = (this.token && docId) ? await EditDocsApi(this.token, docId) : null
+        const payload = (this.tokenSession && docId) ? await EditDocsApi(this.tokenSession, docId) : null
         console.log('payload ;;;;;;;;;;;;;;;', payload)
         return payload
       } catch (error) {
@@ -174,21 +158,19 @@ export const useAppStore = defineStore('app', {
 
       this.isLogIn = false
 			this.profileId = null
-			this.user = null
-			this.token = null
+			this.userEmail = null
+			this.tokenSession = null
 
-      localStorage.removeItem('id');
-			localStorage.removeItem('user');
-			localStorage.removeItem('token');
-			localStorage.removeItem('logged');
+      localStorage.clear();
 
       console.log('TEMINA LOGOUT')
     },
 		async LogIn() {
-      this.isLogIn = localStorage.getItem('logged') === 'true' ? true : false;
-			this.token = localStorage.getItem('token');
-			this.user = localStorage.getItem('user');
-			this.profileId = localStorage.getItem('id');
+      this.isLogIn = localStorage.getItem('isLogIn') === 'true' ? true : false;
+			this.tokenSession = localStorage.getItem('tokenSession');
+			this.profileId = localStorage.getItem('profileId');
+			this.userEmail = localStorage.getItem('userEmail');
+			this.userEmail = localStorage.getItem('userEmail');
     },
     async DownloadXlsAct(type) {
       try {

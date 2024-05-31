@@ -80,19 +80,6 @@ export async function GetDocsApi (token, id) {
 }
 
 export async function EditDocsApi (file, token, id) {
-	// console.log('EditDocsApi ::::::::::::::::::::::',  token, id)
-  // const resp = await fetch(`${API_URL}/documents/${id}`, {
-  //   method: 'PUT',
-  //   body: JSON.stringify({
-  //     email: email,
-  //     password: pass
-  //   }),
-  //   headers: { 'Content-Type': 'application/json', 'Authorization': token }
-  // }).then(res => res.json())
-
-  // console.log ('resp ::::::::::::::::::::::', resp)
-  // return resp	
-
   console.log('EditDocsApi ~~~~~~~~~~~~~~~~~~~~~', file, token, id);
     try {
         const formdata = new FormData();

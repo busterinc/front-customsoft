@@ -14,7 +14,7 @@
             text="CARGAR DOCUMENTO"
             variant="outlined"
             @click="saveDoc()"
-            v-if="isLogIn"
+            v-if="isLogIn || docList"
             :loading="isLoading"
         />
         <i v-else>Para Cargar Archivos primero debes iniciar sesión</i>
@@ -23,7 +23,7 @@
     </section>
     
     <section id="tableDocs">
-        <v-table height="300px" v-if="isLogIn">
+        <v-table height="300px" v-if="isLogIn || docList">
             <thead>
                 <tr>
                     <th v-for="header in headers" :key="header.value" class="text-left">{{ header.text }}</th>
@@ -31,7 +31,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in docs[0] ? docs : docu" :key="item.id">
+                <tr v-for="item in docList" :key="item.id">
                     <td>{{ item.id }}</td>
                     <td>{{ item.created_at }}</td>
                     <td>{{ item.file_name }}</td>
@@ -114,12 +114,12 @@ export default {
     },
 	setup() {
 		const store = useAppStore();
-        const { isLogIn } = storeToRefs(store);
+        const { isLogIn, docList } = storeToRefs(store);
 
         // las props
 		let dialog = ref(false);
 		let isLoading = ref(false);
-        let docs = ref([])
+
         let fileViewer = ref('')
 		let modalOpen = ref(false);
 
@@ -137,7 +137,7 @@ export default {
             { text: 'Bucket URL', value: 'bucket_url' },
         ];
 
-        const docu = [ { "id": 3, "created_at": "2024-05-28T21:33:42.726169+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/4d9233ccfe1230c0ab0566ca258ea24f" }, { "id": 4, "created_at": "2024-05-28T21:38:41.395778+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/4d9233ccfe1230c0ab0566ca258ea24f" }, { "id": 5, "created_at": "2024-05-28T21:42:58.979276+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/a4289699d8e1469e52aef228c89710c4" }, { "id": 6, "created_at": "2024-05-28T23:29:17.240863+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/ac589b5cb85e4254d228857294116e6f" }, { "id": 7, "created_at": "2024-05-28T23:29:21.064649+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/3cbfd9a5e1ef2e8279d2853792b308c4" }, { "id": 8, "created_at": "2024-05-30T03:03:48.039367+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/18a66a3593da0a1bfec39e387192bc30" } ]
+        // const docu = [ { "id": 3, "created_at": "2024-05-28T21:33:42.726169+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/4d9233ccfe1230c0ab0566ca258ea24f" }, { "id": 4, "created_at": "2024-05-28T21:38:41.395778+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/4d9233ccfe1230c0ab0566ca258ea24f" }, { "id": 5, "created_at": "2024-05-28T21:42:58.979276+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/a4289699d8e1469e52aef228c89710c4" }, { "id": 6, "created_at": "2024-05-28T23:29:17.240863+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/ac589b5cb85e4254d228857294116e6f" }, { "id": 7, "created_at": "2024-05-28T23:29:21.064649+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/3cbfd9a5e1ef2e8279d2853792b308c4" }, { "id": 8, "created_at": "2024-05-30T03:03:48.039367+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/18a66a3593da0a1bfec39e387192bc30" } ]
 
         // data
         const dataSuccess = ref('');
@@ -223,10 +223,10 @@ export default {
                 console.log('payload.data XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', payload.data)
                 console.log('payload.data[0] XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', payload.data[0])
 
-                docs.value = payload.data; // Supongo que los documentos están en payload.data
-                console.log('docs.value XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', docs.value)
-                console.log('docs.value[1] XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', docs.value[1])
-                console.log('docs.value[1].file_name XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', docs.value[1].file_name)
+                // docs.value = payload.data; //  los documentos están en payload.data
+                // console.log('docs.value XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', docs.value)
+                // console.log('docs.value[1] XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', docs.value[1])
+                // console.log('docs.value[1].file_name XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', docs.value[1].file_name)
 
                 isLoading.value = false;
             } catch (error) {
@@ -260,11 +260,11 @@ export default {
             dataSuccess,
             dataError,
             headers,
-            docs,
+            // docs,
             seeDoc,
             editDoc,
             delDoc,
-            docu,
+            // docu,
             fileViewer,
             modalOpen,
             flagAlert,
@@ -272,6 +272,7 @@ export default {
             typeAlert,
             alerts,
             downXls,
+            docList
 		};
 	}
 }
