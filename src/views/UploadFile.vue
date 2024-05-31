@@ -218,7 +218,7 @@ export default {
         onMounted(async () => {
             isLoading.value = true;
             try {
-                const payload = await store.GetDocsAct();
+                const payload = await store.GetDocsListAct();
                 console.log('payload XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', payload)
                 console.log('payload.data XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', payload.data)
                 console.log('payload.data[0] XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', payload.data[0])

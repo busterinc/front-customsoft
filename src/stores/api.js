@@ -74,8 +74,8 @@ export async function GetSignInApi (token, email, pass) {
 }
 
 
-export async function GetDocsApi (token, id) {
-	console.log('GetDocsApi zzzzzzzzzzzzzzzzzzzzzzzzz',  token, id)
+export async function GetDocsListApi (token, id) {
+	console.log('GetDocsListApi zzzzzzzzzzzzzzzzzzzzzzzzz',  token, id)
   const resp = await fetch(`${API_URL}/documents?profileId=${id}`, {
     method: 'GET',
     headers: { 'Authorization': token }

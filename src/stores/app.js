@@ -4,7 +4,7 @@ import {
   GetTokenApi,
   GetSignInApi,
   UpFileApi,
-  GetDocsApi,
+  GetDocsListApi,
   DelDocsApi,
   EditDocsApi,
   DownloadXlsApi
@@ -101,21 +101,24 @@ export const useAppStore = defineStore('app', {
       try {
         const resp = this.tokenSession && this.profileId ? await UpFileApi(file, this.tokenSession, this.profileId) : null
         console.log('resp !!!!!!!!!!!!!!!!!!!!!!!', resp)
-        this.dataSession = resp.data
-        console.log('this.dataSession !!!!!!!!!!!!!', this.dataSession)
-        return resp
+
+        const fileInf = resp ? JSON.parse(resp) : null
+        console.log('fileInf !!!!!!!!!!!!!!!!!!!!!!!', fileInf)
+        if (fileInf.uploadData) await this.GetDocsListAct()
+
+        return fileInf
       } catch (error) {
         console.error('Error to upload file:', error)
         return error
       }
     },
-    async GetDocsAct () {
-      console.log(';;;;;;;;;;;;;;; ENTRA GetDocsAct ;;;;;;;;;;;;;;;')
+    async GetDocsListAct () {
+      console.log(';;;;;;;;;;;;;;; ENTRA GetDocsListAct ;;;;;;;;;;;;;;;')
 			console.log('this.tokenSession ;;;;;;;;;;;;;;;', this.tokenSession)
 			console.log('this.profileId ;;;;;;;;;;;;;;;', this.profileId)
 
       try {
-        const payload = (this.tokenSession && this.profileId) ? await GetDocsApi(this.tokenSession, this.profileId) : null
+        const payload = (this.tokenSession && this.profileId) ? await GetDocsListApi(this.tokenSession, this.profileId) : null
         console.log('payload ;;;;;;;;;;;;;;;', payload)
         localStorage.setItem('docList', JSON.stringify(payload.data));
         this.docList = payload.data //Llenamos state con valor de respuesta d elista de doucmentos

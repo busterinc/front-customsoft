@@ -71,7 +71,8 @@
           console.log('attachFile.value[0] __________________', attachFile.value[0])
           const payload = await store.UpFileAct(attachFile.value[0]);    // Action para cargar docs
           console.log('payload __________________', payload);
-          if (payload.data) {
+
+          if (payload.uploadData) {
             emit('flag-success', true);
             setTimeout(() => {
               emit('flag-success', false);
