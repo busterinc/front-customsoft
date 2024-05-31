@@ -14,7 +14,7 @@
             text="CARGAR DOCUMENTO"
             variant="outlined"
             @click="saveDoc()"
-            v-if="isLogIn || docList"
+            v-if="isLogIn"
             :loading="isLoading"
         />
         <i v-else>Para Cargar Archivos primero debes iniciar sesión</i>
@@ -23,7 +23,7 @@
     </section>
     
     <section id="tableDocs">
-        <v-table height="300px" v-if="isLogIn || docList">
+        <v-table height="300px" v-if="isLogIn">
             <thead>
                 <tr>
                     <th v-for="header in headers" :key="header.value" class="text-left">{{ header.text }}</th>

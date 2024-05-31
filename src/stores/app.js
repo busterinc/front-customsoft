@@ -9,6 +9,7 @@ import {
   EditDocsApi,
   DownloadXlsApi
 } from './api'
+import router from '@/router'; 
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -162,6 +163,8 @@ export const useAppStore = defineStore('app', {
 			this.tokenSession = null
 
       localStorage.clear();
+
+      router.push('/');
 
       console.log('TEMINA LOGOUT')
     },

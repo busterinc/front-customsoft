@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<v-toolbar
-			image="https://picsum.photos/1920/1080?random"
+			:image="cover"
 			dark
 			prominent
 		>
@@ -21,16 +21,15 @@
 				<v-card min-width="300">
 					<v-list>
 						<v-list-item
-							prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg"
-							subtitle="Tech Lead CustomSoft"
-							title="Angel Ro."
+							:prepend-avatar="avatar"
+							:subtitle="userSession.data ? userSession.data.name : 'sundar@google.com'"
+							:title="userSession.data ? userSession.data.email : 'Sundar Pichai'"
 						>
 							<template v-slot:append>
 								<v-btn
-									:class="fav ? 'text-red' : ''"
+									:class="isLogIn ? 'text-red' : ''"
 									icon="mdi-heart"
 									variant="text"
-									@click="fav = !fav"
 								></v-btn>
 							</template>
 						</v-list-item>
@@ -84,13 +83,18 @@ export default defineComponent({
 	},
 	setup() {
 		const store = useAppStore();
-      	const { isLogIn } = storeToRefs(store);
+      	const { isLogIn, userSession } = storeToRefs(store);
 
 		// data
 		const fav = ref(false)
 		const menu = ref(false)
 		const message = ref(false)
 		const hints = ref(true)
+
+		const cover = 'https://picsum.photos/1920/1080?random'
+		const avatar = store.userSession.data.email ? 'https://picsum.photos/200/300?random=10'
+		: 'https://lh3.googleusercontent.com/proxy/ViQd2-I9cHLGS9NlgZokyj8yGAeXAEVY7mAPhMF6ZZC52TRV4wbUvYTG3CqebEQCwMHOh35e0j_XSGdqDSc-zb72kZrHLURVynmC2mCt_asN6nyVzOnjXA'
+		//  : 'https://miro.medium.com/v2/resize:fit:730/1*J_lsoyLNZ-jcPWkfHszMyQ.jpeg'
 	
 		const goTo = (link) => {
 			if (link === 'UploadFile') router.push('/upload-files');
@@ -112,6 +116,9 @@ export default defineComponent({
 			message,
 			hints,
 			userOut,
+			userSession,
+			cover,
+			avatar,
 		};
 	}
 });

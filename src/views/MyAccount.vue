@@ -2,7 +2,8 @@
     <NavBar/>
     <v-card>
         <v-card-title>Datos Personales</v-card-title>
-        <v-card-text v-if="userSession">
+
+        <v-card-text v-if="isLogIn">
             <v-row>
                 <v-col cols="12" md="6">
                     <v-text-field v-model="userSession.data.key" label="Id" readonly></v-text-field>
@@ -33,10 +34,11 @@ import { storeToRefs } from 'pinia'
 export default defineComponent({
     setup() {
         const store = useAppStore();
-      	const { userSession } = storeToRefs(store);
+      	const { userSession, isLogIn } = storeToRefs(store);
     
         return {
-            userSession
+            userSession,
+            isLogIn
         };
     }
 });
