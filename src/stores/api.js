@@ -1,7 +1,13 @@
 // stores/app/api.js
-const API_URL = 'http://localhost:8080/api'
-const SUPER_USER_EMAIL = 'invitado@gmail.com'
-const SUPER_USER_PASS = 'Invitado+123'
+// const API_URL = 'http://localhost:8080/api'
+// const SUPER_USER_EMAIL = 'invitado@gmail.com'
+// const SUPER_USER_PASS = 'Invitado+123'
+const API_URL = process.env.API_URL
+const SUPER_USER_EMAIL = process.env.SUPER_USER_EMAIL
+const SUPER_USER_PASS = process.env.SUPER_USER_PASS
+console.log('API_URL ++++++++++++++++++++++',  API_URL)
+console.log('SUPER_USER_EMAIL ++++++++++++++++++++++',  SUPER_USER_EMAIL)
+console.log('SUPER_USER_PASS ++++++++++++++++++++++',  SUPER_USER_PASS)
 
 export async function TestApi () {
     // Lógica para llamar a la API y obtener los datos

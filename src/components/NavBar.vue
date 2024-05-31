@@ -92,10 +92,9 @@ export default defineComponent({
 		const hints = ref(true)
 
 		const cover = 'https://picsum.photos/1920/1080?random'
-		const avatar = store.userSession.data.email ? 'https://picsum.photos/200/300?random=10'
-		: 'https://lh3.googleusercontent.com/proxy/ViQd2-I9cHLGS9NlgZokyj8yGAeXAEVY7mAPhMF6ZZC52TRV4wbUvYTG3CqebEQCwMHOh35e0j_XSGdqDSc-zb72kZrHLURVynmC2mCt_asN6nyVzOnjXA'
-		//  : 'https://miro.medium.com/v2/resize:fit:730/1*J_lsoyLNZ-jcPWkfHszMyQ.jpeg'
-	
+		const avatar = isLogIn ? 'https://www.svgrepo.com/show/81103/avatar.svg'
+		:'https://picsum.photos/200/300?random=10'
+
 		const goTo = (link) => {
 			if (link === 'UploadFile') router.push('/upload-files');
 			if (link === 'MyAccount') router.push('/my-account');

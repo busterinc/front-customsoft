@@ -11,6 +11,9 @@ import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -46,7 +49,13 @@ export default defineConfig({
       vueTemplate: true,
     }),
   ],
-  define: { 'process.env': {} },
+  define: {
+    'process.env': {
+      API_URL: process.env.API_URL,
+      SUPER_USER_EMAIL: process.env.SUPER_USER_EMAIL,
+      SUPER_USER_PASS: process.env.SUPER_USER_PASS
+    } 
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
