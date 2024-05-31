@@ -13,7 +13,12 @@ export default {
   setup() {
     const store = useAppStore();
 
-    if (localStorage.getItem('logged')) store.LogIn();
+    const id = localStorage.removeItem('id');
+    const user = localStorage.removeItem('user');
+    const token = localStorage.removeItem('token');
+    const logged = localStorage.removeItem('logged');
+      
+    if (token || id|| logged || user ) store.LogIn();
 
     return store
   }

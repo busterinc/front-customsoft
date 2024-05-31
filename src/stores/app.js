@@ -1,17 +1,36 @@
 import { defineStore } from 'pinia'
-import { TestApi, GetTokenApi, GetSignInApi, UpFileApi, GetDocsApi, DelDocsApi, EditDocsApi, DownloadXlsApi } from './api'
+import {
+  TestApi,
+  GetTokenApi,
+  GetSignInApi,
+  UpFileApi,
+  GetDocsApi,
+  DelDocsApi,
+  EditDocsApi,
+  DownloadXlsApi
+} from './api'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
-    docList: [],
-    token: null,
-    user: null,
-    superUser: null,
-    dataSession: [],
+    dataSession: JSON.parse(localStorage.getItem('dataSession')) || [],
     test: null,
-		isLogIn: false,
-		profileId: null
+    isLogIn: localStorage.getItem('isLogIn') || false,
+    profileId: localStorage.getItem('profileId') || null,
+    superUser: localStorage.getItem('superUser') || null,
+    token: localStorage.getItem('token') || null,
+    docList: JSON.parse(localStorage.getItem('docList')) || [],
+    user: JSON.parse(localStorage.getItem('user')) || []
   }),
+  // state: () => ({
+  //   docList: [],
+  //   token: null,
+  //   user: null,
+  //   superUser: null,
+  //   dataSession: [],
+  //   test: null,
+	// 	isLogIn: false,
+	// 	profileId: null
+  // }),
   actions: {
     async GetTestAct () {
       try {
@@ -22,23 +41,41 @@ export const useAppStore = defineStore('app', {
         return error
       }
     },
-		async GetTokenAct () {
+    async GetTokenAct() {
       console.log('&&&&&&&&&&&&&& ENTRA GetTokenAct &&&&&&&&&&&&&&&&&')
       try {
         const data = await GetTokenApi()
         console.log('data &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', data)
         this.dataSession = data
+        localStorage.setItem('dataSession', JSON.stringify(data))
         console.log('this.dataSession &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', this.dataSession)
-				this.superUser = data.users.email
-      	this.token = data.token
-        localStorage.setItem('token', this.token);
-
+        this.superUser = data.users.email
+        localStorage.setItem('superUser', this.superUser)
+        this.token = data.token
+        localStorage.setItem('token', this.token)
         return data
       } catch (error) {
         console.error('Error fetching token:', error)
         return error
       }
     },
+		// async GetTokenAct () {
+    //   console.log('&&&&&&&&&&&&&& ENTRA GetTokenAct &&&&&&&&&&&&&&&&&')
+    //   try {
+    //     const data = await GetTokenApi()
+    //     console.log('data &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', data)
+    //     this.dataSession = data
+    //     console.log('this.dataSession &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', this.dataSession)
+		// 		this.superUser = data.users.email
+    //   	this.token = data.token
+    //     localStorage.setItem('token', this.token);
+
+    //     return data
+    //   } catch (error) {
+    //     console.error('Error fetching token:', error)
+    //     return error
+    //   }
+    // },
 		async GetSignInAct (email, pass) {
       console.log('------------- ENTRA GetSignInAct --------------')
 			console.log('email -----------------------------', email)
@@ -51,14 +88,17 @@ export const useAppStore = defineStore('app', {
 				if (response.data) {
 					console.log('response.data.key -----------------------------', response.data.key)
 					this.isLogIn = response.data.key ? true : false
+          localStorage.setItem('logged', this.isLogIn);
 					console.log('this.isLogIn -----------------------------', this.isLogIn)
 					this.profileId = response.data.key
+          localStorage.setItem('id', this.profileId);
 					this.user = response.data
+          localStorage.setItem('user', JSON.stringify(this.user))
       		
-      		localStorage.setItem('id', this.profileId);
-      		localStorage.setItem('logged', this.isLogIn);
-          localStorage.setItem('user', response.data.email);
-          console.log('response.data.email -----------------------------', response.data.email)
+      		
+      		
+          
+          console.log('response.data -----------------------------', response.data)
 				} else {
           console.log('response.error -----------------------------', response.error)
           return response.error
@@ -130,6 +170,8 @@ export const useAppStore = defineStore('app', {
       }
     },
     async LogOut() {
+      console.log('INICIA LOGOUT')
+
       this.isLogIn = false
 			this.profileId = null
 			this.user = null
@@ -139,12 +181,14 @@ export const useAppStore = defineStore('app', {
 			localStorage.removeItem('user');
 			localStorage.removeItem('token');
 			localStorage.removeItem('logged');
+
+      console.log('TEMINA LOGOUT')
     },
 		async LogIn() {
-      this.isLogIn = true
-			this.token = localStorage.removeItem('token');
-			this.user = localStorage.removeItem('user');
-			this.profileId = localStorage.removeItem('id');
+      this.isLogIn = localStorage.getItem('logged') === 'true' ? true : false;
+			this.token = localStorage.getItem('token');
+			this.user = localStorage.getItem('user');
+			this.profileId = localStorage.getItem('id');
     },
     async DownloadXlsAct(type) {
       try {

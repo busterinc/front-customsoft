@@ -5,7 +5,7 @@
           <v-card-text>
             <v-row dense>
               <v-file-input
-                label="ejemplo.pdf (*.PDF)"
+                label="ejemplo.pdf (*.PDF | *.PNG | *.JPG | *.JPGE)"
                 chips
                 multiple
                 v-model="attachFile"

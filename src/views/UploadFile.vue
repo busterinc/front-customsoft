@@ -23,7 +23,7 @@
     </section>
     
     <section id="tableDocs">
-        <v-table height="300px">
+        <v-table height="300px" v-if="isLogIn">
             <thead>
                 <tr>
                     <th v-for="header in headers" :key="header.value" class="text-left">{{ header.text }}</th>
@@ -37,15 +37,23 @@
                     <td>{{ item.file_name }}</td>
                     <td>{{ item.xtension }}</td>
                     <td>{{ item.size }}</td>
-                    <td>{{ item.bucket_url }}</td>
+                    <td>
+                        <div class="truncate-text">
+                            <a :href="item.bucket_url" target="_blank">{{ item.bucket_url }}</a>
+                        </div>
+                    </td>
                     <td>
                         <!-- Botones para editar, ver documento y eliminar documento -->
-                        <v-btn @click="seeDoc(item)">Ver</v-btn>
-                        <v-btn @click="editDoc(item)">Editar</v-btn>
-                        <v-btn @click="delDoc(item)">Eliminar</v-btn>
+                        <v-btn @click="seeDoc(item)" icon="mdi-file-eye-outline"></v-btn>
+                        <v-btn @click="editDoc(item)" icon="mdi-pencil"></v-btn>
+                        <v-btn @click="delDoc(item)" icon="mdi-delete"></v-btn>
                     </td>
                 </tr>
             </tbody>
+        </v-table>
+
+        <v-table class="alineas" v-else>
+            <i>Sin datos por mostrar</i>
         </v-table>
     </section>
 
@@ -53,25 +61,24 @@
         <v-btn
             class="text-none"
             append-icon="mdi-cloud-download"
-            variant="text"
-            border
-            outlined
+            variant="outlined"
             rounded="xl"
             @click="downXls('log')"
+            color="primary"
+            extended
         >
-            DESCARGAR LOG
+            LOG
         </v-btn>
-
         <v-btn
             class="text-none"
             append-icon="mdi-cloud-download"
-            variant="text"
-            border
-            outlined
+            variant="outlined"
             rounded="xl"
             @click="downXls('docs')"
+            color="primary"
+            extended
         >
-            DESCARGAR LISTA DOCS
+            LISTA DOCS
         </v-btn>
     </section>
     
@@ -107,7 +114,7 @@ export default {
     },
 	setup() {
 		const store = useAppStore();
-        const { token, isLogIn } = storeToRefs(store);
+        const { isLogIn } = storeToRefs(store);
 
         // las props
 		let dialog = ref(false);
@@ -130,15 +137,6 @@ export default {
             { text: 'Bucket URL', value: 'bucket_url' },
         ];
 
-        // const docu = [
-        //     { "id": 2, "created_at": "2024-05-28T21:28:24.176823+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "creando_jwt_con_node.pdf", "xtension": "pdf", "size": "150322", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/f12c94b1af1190f90f86107bc96a34ed" },
-        //     { "id": 3, "created_at": "2024-05-28T21:33:42.726169+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/4d9233ccfe1230c0ab0566ca258ea24f" },
-        //     { "id": 4, "created_at": "2024-05-28T21:38:41.395778+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/4d9233ccfe1230c0ab0566ca258ea24f" },
-        //     { "id": 5, "created_at": "2024-05-28T21:42:58.979276+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/a4289699d8e1469e52aef228c89710c4" },
-        //     { "id": 6, "created_at": "2024-05-28T23:29:17.240863+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/ac589b5cb85e4254d228857294116e6f" },
-        //     { "id": 7, "created_at": "2024-05-28T23:29:21.064649+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/3cbfd9a5e1ef2e8279d2853792b308c4" },
-        //     { "id": 8, "created_at": "2024-05-30T03:03:48.039367+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/18a66a3593da0a1bfec39e387192bc30" }
-        // ]
         const docu = [ { "id": 3, "created_at": "2024-05-28T21:33:42.726169+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/4d9233ccfe1230c0ab0566ca258ea24f" }, { "id": 4, "created_at": "2024-05-28T21:38:41.395778+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/4d9233ccfe1230c0ab0566ca258ea24f" }, { "id": 5, "created_at": "2024-05-28T21:42:58.979276+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/a4289699d8e1469e52aef228c89710c4" }, { "id": 6, "created_at": "2024-05-28T23:29:17.240863+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/ac589b5cb85e4254d228857294116e6f" }, { "id": 7, "created_at": "2024-05-28T23:29:21.064649+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/3cbfd9a5e1ef2e8279d2853792b308c4" }, { "id": 8, "created_at": "2024-05-30T03:03:48.039367+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/18a66a3593da0a1bfec39e387192bc30" } ]
 
         // data
@@ -171,9 +169,6 @@ export default {
             isLoading.value = false
             dataError.value = data
         }
-
-        // // Obtener documentos de la store
-        // docs.value = store.docList;
 
         // Acciones para interactuar con los documentos
         const seeDoc = async (data) => {
@@ -286,5 +281,11 @@ export default {
     .alineas {
         text-align: center;
         margin-top: 2%;
+    }
+    .truncate-text {
+        max-width: 200px; /* Ancho máximo para la URL */
+        white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+        overflow: hidden; /* Oculta el texto que se desborda del contenedor */
+        text-overflow: ellipsis; /* Agrega puntos suspensivos para indicar que el texto ha sido truncado */
     }
 </style>
