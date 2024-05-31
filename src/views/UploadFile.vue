@@ -13,13 +13,13 @@
             prepend-icon="mdi-cloud-upload"
             text="CARGAR DOCUMENTO"
             variant="outlined"
-            @click="saveDoc()"
+            @click="saveDoc('new', null)"
             v-if="isLogIn"
             :loading="isLoading"
         />
         <i v-else>Para Cargar Archivos primero debes iniciar sesión</i>
 
-        <UpFile :enable="dialog" @close-popup="closePopup" @save-popup="savePopup" @flag-error="flagError" @flag-success="flagSuccess" />
+        <UpFile :enable="dialog" @close-popup="closePopup" @save-popup="savePopup" @flag-error="flagError" @flag-success="flagSuccess" :type="typeUpload" :item="idItem" />
     </section>
     
     <section id="tableDocs">
@@ -110,7 +110,7 @@ export default {
 	name: 'Home',
     components: {
         NavBar,
-        UpFile
+        UpFile,
     },
 	setup() {
 		const store = useAppStore();
@@ -119,6 +119,8 @@ export default {
         // las props
 		let dialog = ref(false);
 		let isLoading = ref(false);
+		let typeUpload = ref('');
+		let idItem = ref();
 
         let fileViewer = ref('')
 		let modalOpen = ref(false);
@@ -155,9 +157,11 @@ export default {
         const savePopup = async () => {
             isLoading.value = true
         }
-        const saveDoc = async () => {
+        const saveDoc = async (type, id) => {
             dialog.value = true
             isLoading.value = false
+            typeUpload.value = type
+            idItem.value = id
         }
         const flagSuccess = async (data) => {
             console.log('flagSuccess data ¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬', data)
@@ -187,7 +191,7 @@ export default {
             // Lógica para editar el documento
             console.log('editDoc data eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', data)
             try {
-                await saveDoc()
+                await saveDoc('edit', data.id)
                 // const payload = await store.EditDocsAct(data.id, file);
                 // console.log('dirtDoc payload eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', payload)
                 await alerts(true, 'Se editó documento exitosamente', 'success')
@@ -272,7 +276,9 @@ export default {
             typeAlert,
             alerts,
             downXls,
-            docList
+            docList,
+            typeUpload,
+            idItem
 		};
 	}
 }

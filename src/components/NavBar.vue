@@ -92,8 +92,7 @@ export default defineComponent({
 		const hints = ref(true)
 
 		const cover = 'https://picsum.photos/1920/1080?random'
-		const avatar = isLogIn ? 'https://www.svgrepo.com/show/81103/avatar.svg'
-		:'https://picsum.photos/200/300?random=10'
+		const avatar = !isLogIn ? 'https://www.svgrepo.com/show/81103/avatar.svg' : 'https://picsum.photos/200/300?random=10'
 
 		const goTo = (link) => {
 			if (link === 'UploadFile') router.push('/upload-files');

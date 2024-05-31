@@ -23,16 +23,6 @@ export const useAppStore = defineStore('app', {
     docList: JSON.parse(localStorage.getItem('docList')) || [],
     userEmail: localStorage.getItem('userEmail') || null,
   }),
-  // state: () => ({
-  //   docList: [],
-  //   token: null,
-  //   user: null,
-  //   superUser: null,
-  //   dataSession: [],
-  //   test: null,
-	// 	isLogIn: false,
-	// 	profileId: null
-  // }),
   actions: {
     async GetTestAct () {
       try {
@@ -93,18 +83,20 @@ export const useAppStore = defineStore('app', {
         return error
       }
     },
-    async UpFileAct (file) {
+    async UpFileAct (file, type, item) {
       console.log('!!!!!!!!!!!! ENTRA UpFileAct !!!!!!!!!!!!!!!')
 			console.log('file !!!!!!!!!!!!!', file)
+			console.log('type !!!!!!!!!!!!!', type)
+			console.log('item !!!!!!!!!!!!!', item)
 			console.log('this.tokenSession !!!!!!!!!!!!!', this.tokenSession)
 
       try {
-        const resp = this.tokenSession && this.profileId ? await UpFileApi(file, this.tokenSession, this.profileId) : null
+        const resp = this.tokenSession && this.profileId ? await UpFileApi(file, this.tokenSession, this.profileId, type, item) : null
         console.log('resp !!!!!!!!!!!!!!!!!!!!!!!', resp)
 
         const fileInf = resp ? JSON.parse(resp) : null
         console.log('fileInf !!!!!!!!!!!!!!!!!!!!!!!', fileInf)
-        if (fileInf.uploadData) await this.GetDocsListAct()
+        if (fileInf.message) await this.GetDocsListAct()
 
         return fileInf
       } catch (error) {
@@ -137,6 +129,9 @@ export const useAppStore = defineStore('app', {
       try {
         const payload = (this.tokenSession && docId) ? await DelDocsApi(this.tokenSession, docId) : null
         console.log('payload |||||||||||||||||||||||||', payload)
+
+        if (payload.message) await this.GetDocsListAct()
+
         return payload
       } catch (error) {
         console.error('Error deleting file:', error)

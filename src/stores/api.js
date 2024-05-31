@@ -31,15 +31,17 @@ export async function GetTokenApi () {
     return resp
 }
 
-export async function UpFileApi (file, token, id) {
-	console.log('UpFileApi ~~~~~~~~~~~~~~~~~~~~~', file, token, id);
+export async function UpFileApi (file, token, id, type, item) {
+	console.log('UpFileApi ~~~~~~~~~~~~~~~~~~~~~', file, token, id, type, item);
     try {
         const formdata = new FormData();
         formdata.append("author", id);
         formdata.append("file", file);
 
+        const method = type === 'new' ? 'POST' : 'PUT'
+
         const requestOptions = {
-            method: "POST",
+            method: method,
             body: formdata,
             headers: {
                 Authorization: `${token}`
@@ -47,7 +49,9 @@ export async function UpFileApi (file, token, id) {
             redirect: "follow"
         };
 
-        const resp = await fetch(`${API_URL}/upload`, requestOptions);
+        const URL = type === 'new' ? 'upload' : `documents/${item}`
+
+        const resp = await fetch(`${API_URL}/${URL}`, requestOptions);
         console.log('resp:', resp);
         const data = await resp.text();
         console.log('data:', data);

@@ -1,5 +1,5 @@
 <template>
-    <div class="pa-4 text-center">
+    <div class="pa-4 text-center" id="PopUpFile">
       <v-dialog v-model="active" max-width="600">
         <v-card prepend-icon="mdi-account" title="Cargar Documento">
           <v-card-text>
@@ -34,19 +34,23 @@
   import { ref, watch } from 'vue'; // Importa ref y watch de Vue
   import { defineComponent } from 'vue';
   import { useAppStore } from '../stores/app.js';
-  import { storeToRefs } from 'pinia'
+  // import { storeToRefs } from 'pinia'
   
   export default defineComponent({
     name: 'UpFile',
     props: {
-      enable: Boolean
+      enable: Boolean,
+      type: Text,
+      item: Number
     },
     setup(props, { emit }) {
       const store = useAppStore();
-      const { token } = storeToRefs(store);
+      // const { token } = storeToRefs(store);
   
       // props
       const active = ref(props.enable);
+      const tipo = ref(props.type);
+      const key = ref(props.item);
       const isLoad = ref(false);
 
       // data
@@ -56,6 +60,17 @@
       watch(() => props.enable, (newValue) => {
         active.value = newValue;
       });
+      // Observar cambios en la prop 'type'
+      watch(() => props.type, (newValue) => {
+        console.log('newValue ::::::::::::::::::::::::::::', newValue)
+        tipo.value = newValue;
+      });
+      // Observar cambios en la prop 'item'
+      watch(() => props.item, (newValue) => {
+        console.log('newValue ::::::::::::::::::::::::::::', newValue)
+        key.value = newValue;
+      });
+
   
       const close = () => {
         emit('close-popup');
@@ -69,7 +84,7 @@
           console.log('attachFile __________________', attachFile)
           console.log('attachFile.value __________________', attachFile.value)
           console.log('attachFile.value[0] __________________', attachFile.value[0])
-          const payload = await store.UpFileAct(attachFile.value[0]);    // Action para cargar docs
+          const payload = await store.UpFileAct(attachFile.value[0], tipo.value, key.value) // Action para cargar docs
           console.log('payload __________________', payload);
 
           if (payload.uploadData) {
@@ -97,7 +112,9 @@
         isLoad,
         close,
         save,
-        attachFile
+        attachFile,
+        key,
+        tipo
       };
     }
   });
