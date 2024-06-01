@@ -6,7 +6,6 @@ import {
   UpFileApi,
   GetDocsListApi,
   DelDocsApi,
-  EditDocsApi,
   DownloadXlsApi
 } from './api'
 import router from '@/router'; 
@@ -75,7 +74,7 @@ export const useAppStore = defineStore('app', {
           console.log('response.data.email -----------------------------', response.data.email)
 				} else {
           console.log('response.error -----------------------------', response.error)
-          return response.error
+          return response
         }
         return response
       } catch (error) {
@@ -135,20 +134,6 @@ export const useAppStore = defineStore('app', {
         return payload
       } catch (error) {
         console.error('Error deleting file:', error)
-        return error
-      }
-    },
-    async EditDocsAct (docId, file) {
-      console.log(';;;;;;;;;;;;;;; ENTRA EditDocsAct ;;;;;;;;;;;;;;;')
-			console.log('this.tokenSession ;;;;;;;;;;;;;;;', this.tokenSession)
-			console.log('docId ;;;;;;;;;;;;;;;', docId)
-
-      try {
-        const payload = (this.tokenSession && docId) ? await EditDocsApi(this.tokenSession, docId) : null
-        console.log('payload ;;;;;;;;;;;;;;;', payload)
-        return payload
-      } catch (error) {
-        console.error('Error editing token:', error)
         return error
       }
     },

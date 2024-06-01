@@ -89,33 +89,6 @@ export async function GetDocsListApi (token, id) {
   return resp	
 }
 
-export async function EditDocsApi (file, token, id) {
-  console.log('EditDocsApi ~~~~~~~~~~~~~~~~~~~~~', file, token, id);
-    try {
-        const formdata = new FormData();
-        formdata.append("author", id);
-        formdata.append("file", file);
-
-        const requestOptions = {
-            method: "PUT",
-            body: formdata,
-            headers: {
-                Authorization: `${token}`
-            },
-            redirect: "follow"
-        };
-
-        const resp = await fetch(`${API_URL}/documents/${id}`, requestOptions);
-        console.log('resp:', resp);
-        const data = await resp.text();
-        console.log('data:', data);
-        return data;
-    } catch (e) {
-        console.error('ERROR:', e);
-        return e;
-    }	
-}
-
 export async function DelDocsApi (token, id) {
 	console.log('GetSignInApi SSSSSSSSSSSSSSSSSSSSSSSSSSSSS',  token, id)
   const resp = await fetch(`${API_URL}/documents/${id}`, {

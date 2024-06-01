@@ -6,9 +6,7 @@
 			prominent
 		>
 			<v-app-bar-nav-icon @click="menu = !menu"></v-app-bar-nav-icon>
-	
 			<v-toolbar-title>CUSTOMSOFT - FILE MANAGER</v-toolbar-title>
-	
 			<v-spacer></v-spacer>
 	
 			<v-btn icon>
@@ -92,7 +90,7 @@ export default defineComponent({
 		const hints = ref(true)
 
 		const cover = 'https://picsum.photos/1920/1080?random'
-		const avatar = !isLogIn ? 'https://www.svgrepo.com/show/81103/avatar.svg' : 'https://picsum.photos/200/300?random=10'
+		const avatar = ref(!store.isLogIn ? 'https://www.svgrepo.com/show/81103/avatar.svg' : 'https://picsum.photos/200/300?random=10')
 
 		const goTo = (link) => {
 			if (link === 'UploadFile') router.push('/upload-files');

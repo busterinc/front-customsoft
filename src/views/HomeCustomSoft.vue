@@ -1,8 +1,6 @@
 <template>
     <NavBar />
-    <v-parallax
-      :src="cover"
-    >
+    <v-parallax :src="cover" class="cover-parallax">
         <div class="d-flex flex-column fill-height justify-center align-center text-white">
             <h1 class="text-h4 font-weight-thin mb-4">
                 CustomSoft File Manager
@@ -14,11 +12,10 @@
                 <v-btn
                     class="text-none"
                     append-icon="mdi-arrow-right"
-                    variant="text"
-                    border
-                    outlined
+                    variant="outlined"
                     rounded="xl"
                     @click="navToUpload"
+                    extended
                 >
                     COMENZAR
                 </v-btn>
@@ -26,7 +23,7 @@
         </div>
     </v-parallax>
 
-    <UpFile :enable="dialog" @close-popup="closePopup" @save-popup="savePopup" />
+    <!-- <UpFile :enable="dialog" @close-popup="closePopup" @save-popup="savePopup" /> -->
 </template>
 
 <script>
@@ -53,3 +50,10 @@ export default {
 	}
 }
 </script>
+
+<style scoped>
+    .cover-parallax {
+        height: -webkit-fill-available;
+        text-align: center;
+    }
+</style>

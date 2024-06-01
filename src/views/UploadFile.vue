@@ -1,12 +1,17 @@
 <template>
     <NavBar />
 
-    <v-alert v-show="dataError" closable text="Error al cargar documento" type="error" variant="tonal"></v-alert>
-    <v-alert v-show="dataSuccess" closable text="Documento cargado exitosamente" type="success" variant="tonal"></v-alert>
+    <v-container fluid>
+       <v-row>
+            <v-col>
+                <v-alert v-show="dataError" text="Error al cargar documento" type="error"></v-alert>
+                <v-alert v-show="dataSuccess" text="Documento cargado exitosamente" type="success"></v-alert>
+                <v-alert v-show="flagAlert" :text="messageAlert" :type="typeAlert"></v-alert>
+            </v-col>
+        </v-row> 
+    </v-container>
 
-    <v-alert v-show="flagAlert" closable :text="messageAlert" :type="typeAlert" variant="tonal"></v-alert>
-
-    <section id="upFiles" class="alineas">
+    <div id="upFiles" class="alineas">
         <v-fab
             color="primary"
             extended
@@ -16,18 +21,22 @@
             @click="saveDoc('new', null)"
             v-if="isLogIn"
             :loading="isLoading"
+            class="alineas"
         />
         <i v-else>Para Cargar Archivos primero debes iniciar sesión</i>
 
         <UpFile :enable="dialog" @close-popup="closePopup" @save-popup="savePopup" @flag-error="flagError" @flag-success="flagSuccess" :type="typeUpload" :item="idItem" />
-    </section>
+    </div>
     
     <section id="tableDocs">
-        <v-table height="300px" v-if="isLogIn">
+        <v-data-table class="table-px" v-if="isLogIn && docList.length > 0"
+            :items-per-page="5"
+            :pagination.sync="pagination"
+        >
             <thead>
                 <tr>
                     <th v-for="header in headers" :key="header.value" class="text-left">{{ header.text }}</th>
-                    <th class="text-left">Acciones</th> <!-- Nueva columna para acciones -->
+                    <th class="text-left">Acciones</th> 
                 </tr>
             </thead>
             <tbody>
@@ -43,18 +52,16 @@
                         </div>
                     </td>
                     <td>
-                        <!-- Botones para editar, ver documento y eliminar documento -->
                         <v-btn @click="seeDoc(item)" icon="mdi-file-eye-outline"></v-btn>
                         <v-btn @click="editDoc(item)" icon="mdi-pencil"></v-btn>
                         <v-btn @click="delDoc(item)" icon="mdi-delete"></v-btn>
                     </td>
                 </tr>
             </tbody>
-        </v-table>
-
-        <v-table class="alineas" v-else>
+        </v-data-table>
+        <div class="alineas" v-else>
             <i>Sin datos por mostrar</i>
-        </v-table>
+        </div>
     </section>
 
     <section class="alineas">
@@ -66,6 +73,7 @@
             @click="downXls('log')"
             color="primary"
             extended
+            style="margin-right: 2%;"
         >
             LOG
         </v-btn>
@@ -77,15 +85,14 @@
             @click="downXls('docs')"
             color="primary"
             extended
+            style="margin-left: 2%;"
         >
             LISTA DOCS
         </v-btn>
     </section>
-    
 
-    <!-- Iframe para visualizar el archivo --><!-- Modal -->
     <v-dialog v-model="modalOpen" max-width="600">
-      <template v-slot:activator="{ on }"></template> <!-- No mostramos el activator -->
+      <template v-slot:activator="{ on }"></template> 
       <v-card>
         <v-card-title>Visor de Archivo</v-card-title>
         <v-card-text>
@@ -129,6 +136,7 @@ export default {
         let messageAlert = ref('');
         let typeAlert = ref('');
 
+
         // Headers de la tabla
         const headers = [
             { text: 'ID', value: 'id' },
@@ -138,8 +146,6 @@ export default {
             { text: 'Size', value: 'size' },
             { text: 'Bucket URL', value: 'bucket_url' },
         ];
-
-        // const docu = [ { "id": 3, "created_at": "2024-05-28T21:33:42.726169+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/4d9233ccfe1230c0ab0566ca258ea24f" }, { "id": 4, "created_at": "2024-05-28T21:38:41.395778+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/4d9233ccfe1230c0ab0566ca258ea24f" }, { "id": 5, "created_at": "2024-05-28T21:42:58.979276+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/a4289699d8e1469e52aef228c89710c4" }, { "id": 6, "created_at": "2024-05-28T23:29:17.240863+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/ac589b5cb85e4254d228857294116e6f" }, { "id": 7, "created_at": "2024-05-28T23:29:21.064649+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/3cbfd9a5e1ef2e8279d2853792b308c4" }, { "id": 8, "created_at": "2024-05-30T03:03:48.039367+00:00", "profile_id": "da9fbcbd-ef35-4fa6-989c-8bd1a56a87af", "file_name": "ejemplo_pdf.pdf", "xtension": "pdf", "size": "190569", "bucket_url": "https://lakcpegdxivxpkjmiulo.supabase.co/storage/v1/object/public/raikou/18a66a3593da0a1bfec39e387192bc30" } ]
 
         // data
         const dataSuccess = ref('');
@@ -193,8 +199,6 @@ export default {
             try {
                 await saveDoc('edit', data.id)
                 // const payload = await store.EditDocsAct(data.id, file);
-                // console.log('dirtDoc payload eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', payload)
-                await alerts(true, 'Se editó documento exitosamente', 'success')
             } catch (error) {
                 console.error('Error edit document:', error);
                 await alerts(true, 'Error al editar documento', 'error')
@@ -278,7 +282,10 @@ export default {
             downXls,
             docList,
             typeUpload,
-            idItem
+            idItem,
+            // pagination,
+            // onPageChange,
+            // onItemsPerPageChange,
 		};
 	}
 }
@@ -294,5 +301,8 @@ export default {
         white-space: nowrap; /* Evita que el texto se divida en varias líneas */
         overflow: hidden; /* Oculta el texto que se desborda del contenedor */
         text-overflow: ellipsis; /* Agrega puntos suspensivos para indicar que el texto ha sido truncado */
+    }
+    .table-px {
+        height: 700px;
     }
 </style>

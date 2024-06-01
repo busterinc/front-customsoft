@@ -1,6 +1,10 @@
 <template>
     <NavBar/>
     <br/><br/>
+
+    <v-alert v-show="flagAlert" closable :text="messageAlert" :type="typeAlert" variant="tonal"></v-alert>
+    <!-- <v-alert v-show="true" closable text="Error al cargar documento" type="error" variant="tonal"></v-alert> -->
+
     <v-card class="mx-auto" style="max-width: 500px">
         <v-toolbar color="deep-purple-accent-4" cards dark flat>
             <v-btn icon>
@@ -70,6 +74,10 @@ export default {
 		const isValid = ref(false);
 		const isLoading = ref(false);
 
+        const flagAlert = ref(false);
+        const messageAlert = ref('');
+        const typeAlert = ref('');
+
 		const rules = {
 			email: v => !!(v || '').match(/@/) || 'Por favor introduzca un correo válido',
 			length: len => v => (v || '').length >= len || `Longitud de carácter no válida, requiere ${len}`,
@@ -80,6 +88,7 @@ export default {
 
 		const logIn = async () => {
 			try {
+                isLoading.value = true
 				console.log('email __________________', email.value)
 				console.log('password __________________', password.value)
 				const respToken = await store.GetTokenAct();    // Action para generar token
@@ -89,13 +98,32 @@ export default {
 				console.log('store.superUser __________________', store.superUser)
 				const logInResp = await store.GetSignInAct(email.value, password.value);    // Action para generar token
 				console.log('logInResp __________________', logInResp)
-                
                 console.log('store.isLogIn __________________', store.isLogIn)
-                if (store.isLogIn) router.push('/')
+                isLoading.value = false
+
+                await alerts(true, store.isLogIn ? 'Inicio de sesión exitoso' : 'Compruebe que su correo y/o contraseña sean correctos', store.isLogIn ? 'success' : 'error')
+                if (store.isLogIn) {
+                    setTimeout(() => {
+                        router.push('/')
+                    }, 1500);
+                }
 			} catch (error) {
-				console.error('Error fetching token:', error);
+                await alerts(true, 'Error al iniciar sesión', 'error')
+				console.error('Error al iniciar sesión:', error);
 			}
 		};
+
+        const alerts = async (enable, mess, type) => {
+            flagAlert.value = enable
+            messageAlert.value = mess
+            typeAlert.value = type
+
+            setTimeout(() => {
+                flagAlert.value = false
+                messageAlert.value = ''
+                typeAlert.value = ''
+            }, 3000);
+        }
 
 		return {
 			email,
@@ -103,7 +131,13 @@ export default {
 			isValid,
 			isLoading,
 			rules,
-			logIn
+			logIn,
+            isLoading,
+            isLogIn,
+            alerts,
+            flagAlert,
+            messageAlert,
+            typeAlert,
 		};
 	}
 };
