@@ -8,7 +8,7 @@ import {
   DelDocsApi,
   DownloadXlsApi
 } from './api'
-import router from '@/router'; 
+import router from '@/router';
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -21,6 +21,7 @@ export const useAppStore = defineStore('app', {
     tokenSession: localStorage.getItem('tokenSession') || null,
     docList: JSON.parse(localStorage.getItem('docList')) || [],
     userEmail: localStorage.getItem('userEmail') || null,
+    treeData: treeData
   }),
   actions: {
     async GetTestAct () {
@@ -165,6 +166,162 @@ export const useAppStore = defineStore('app', {
       } catch (error) {
         console.error('Error:', error.message);
       }
+    },
+
+    async addDirectoryToTree() {
+      const newDirectory = {
+        name: 'Nuevo directorio',
+        children: [],
+      };
+      this.treeData.files.push(newDirectory);
+    },
+    async addFileToTree() {
+      const newFile = {
+        name: 'Nuevo archivo',
+        type: 'file',
+      };
+      this.treeData.files.push(newFile);
+    },
+    async DelFoldAct (node) {
+      console.log('wwwwwwwwwwwwwwwwwwww RemoveDirectoryAct wwwwwwwwwwwwwwwwwwwwwwww');
+      console.log('node wwwwwwwwwwwwwwwwwwwwwwwwwwww', node);
+
+      if (node.name === 'root' && node.type === 'directory') {
+        console.log('node.name wwwwwwwwwwwwwwwwwwwwwwwwwwww', node.name);
+        console.log('node.type wwwwwwwwwwwwwwwwwwwwwwwwwwww', node.type);
+        this.treeData = {}
+        return { treeData: this.treeData, type: node.type, name: node.name }
+      } else {
+        let removed = false;
+
+        function removeDirectory(files, id) {
+          for (let i = 0; i < files.length; i++) {
+            const current = files[i];
+            if (current.id === id && current.type === 'directory') {
+              files.splice(i, 1);
+              removed = true;
+              return true; // Indicamos que se encontró y eliminó el directorio
+            } else if (current.type === 'directory' && current.files.length > 0) {
+              // Si es un directorio y tiene archivos, buscamos en ellos
+              if (removeDirectory(current.files, id)) {
+                return true; // Indicamos que se encontró y eliminó el directorio
+              }
+            }
+          }
+          return false; // Indicamos que el directorio no se encontró
+        }
+        removeDirectory(this.treeData.files, node.id);
+
+        if (removed) {
+          console.log('Directory removed successfully.');
+          return 'Directory removed successfully.'
+        } else {
+          console.log('Directory not found.')
+          return 'Directory not found.'
+        }
+      }      
+    },
+    async RenameFoldAct (node, newName) {
+      console.log('0000000000000 RenameFoldAct 000000000000')
+      const stack = [...this.treeData.files];
+
+      while (stack.length) {
+        const current = stack.pop();
+
+        if (current.id === node.id) {
+          current.name = newName;
+          break;
+        } else if (current.type === 'directory') {
+          stack.push(...current.files);
+        }
+      }
+    },
+    async DelFileAct (node) {
+      console.log('0000000000000 DelFileAct 000000000000')
+      console.log('node 0000000000000000000000000', node)
+
+      let removed = false;
+
+      async function removeFile(files, id) {
+        for (let i = 0; i < files.length; i++) {
+          const current = files[i];
+          if (current.id === node.id && current.type === 'file') {
+            files.splice(i, 1);
+            removed = true;
+            return true; // Indicamos que se encontró y eliminó el archivo
+          } else if (current.type === 'directory' && current.files.length > 0) {
+            // Si es un directorio y tiene archivos, buscamos en ellos
+            if (removeFile(current.files, id)) {
+              return true; // Indicamos que se encontró y eliminó el archivo
+            }
+          }
+        }
+        return false; // Indicamos que el archivo no se encontró
+      }
+
+      // Buscamos y eliminamos el archivo
+      await removeFile(this.treeData.files, node.id);
+
+      if (removed) console.log('File removed successfully.');
+      else console.log('File not found.')
+    },
+    async RenameFileAct (node, newName) {
+      console.log('0000000000000 RenameFileAct 000000000000')
+      console.log('node 0000000000000000000000000', node)
+      console.log('newName 0000000000000000000000000', newName)
+      console.log('node.id 0000000000000000000000000', node.id)
+
+      const stack = [...this.treeData.files];
+
+      while (stack.length) {
+        const current = stack.pop();
+
+        if (current.id === node.id && current.type === 'file') {
+          current.name = newName;
+          break;
+        } else if (current.type === 'directory') {
+          stack.push(...current.files);
+        }
+      }
     }
   }
 })
+
+let treeData = {
+  'id': 1,
+  'name': 'root',
+  'type': 'directory',
+  'files': [
+    {
+      'id': 2,
+      'name': 'folder1',
+      'type': 'directory',
+      'files': [
+        {
+          'id': 3,
+          'name': 'file1.txt',
+          'type': 'file',
+          'content': 'Contenido del archivo 1'
+        },
+        {
+          'id': 4,
+          'name': 'file2.txt',
+          'type': 'file',
+          'content': 'Contenido del archivo 2'
+        }
+      ]
+    },
+    {
+      'id': 5,
+      'name': 'folder2',
+      'type': 'directory',
+      'files': []
+    },
+    {
+      'id': 6,
+      'name': 'file3.txt',
+      'type': 'file',
+      'content': 'Contenido del archivo 3'
+    }
+  ]
+}

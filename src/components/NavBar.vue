@@ -54,6 +54,12 @@
 							value="files"
 							@click="goTo('UploadFile')"
 						></v-list-item>
+						<v-list-item
+							prepend-icon="mdi-tree"
+							title="Árbol"
+							value="tree"
+							@click="goTo('Tree')"
+						/>
 					</v-list>
 		
 					<v-card-actions>
@@ -97,6 +103,7 @@ export default defineComponent({
 			if (link === 'MyAccount') router.push('/my-account');
 			if (link === 'Home') router.push('/');
 			if (link === 'LogIn') router.push('/sign-in');
+			if (link === 'Tree') router.push('/tree');
 		};
 
 		const userOut = async () => {

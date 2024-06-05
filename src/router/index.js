@@ -3,7 +3,7 @@ import Home from '../views/HomeCustomSoft.vue'
 import UploadFile from '../views/UploadFile.vue'
 import MyAccount from '../views/MyAccount.vue'
 import SignUp from '../views/SignUp.vue'
-
+import TreeDirectory from '../views/TreeDirectory.vue'
 
 const routes = [
   {
@@ -30,6 +30,11 @@ const routes = [
     path: '/sign-up',
     name: 'SignUp',
     component: SignUp
+  },
+  {
+    path: '/tree',
+    name: 'TreeDirectory',
+    component: TreeDirectory
   }
 ]
 
