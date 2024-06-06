@@ -21,7 +21,45 @@ export const useAppStore = defineStore('app', {
     tokenSession: localStorage.getItem('tokenSession') || null,
     docList: JSON.parse(localStorage.getItem('docList')) || [],
     userEmail: localStorage.getItem('userEmail') || null,
-    treeData: treeData
+    treeData: {
+      'id': 'd2c9e8b5a3f6',
+      'name': 'root',
+      'type': 'directory',
+      'root': true,
+      'files': [
+        {
+          'id': 'a3f8c5e9b9d4',
+          'name': 'folder1',
+          'type': 'directory',
+          'files': [
+            {
+              'id': 'd5b1e9c7e6c8',
+              'name': 'file1.txt',
+              'type': 'file',
+              'content': 'Contenido del archivo 1'
+            },
+            {
+              'id': '4a1c9d0e7b6f4a1c9e7',
+              'name': 'file2.txt',
+              'type': 'file',
+              'content': 'Contenido del archivo 2'
+            }
+          ]
+        },
+        {
+          'id': '3d2c9e8b5a3f6b2d5a',
+          'name': 'folder2',
+          'type': 'directory',
+          'files': []
+        },
+        {
+          'id': '8b0a9a2f9c3e5b7d6b',
+          'name': 'file3.txt',
+          'type': 'file',
+          'content': 'Contenido del archivo 3'
+        }
+      ]
+    }
   }),
   actions: {
     async GetTestAct () {
@@ -168,29 +206,32 @@ export const useAppStore = defineStore('app', {
       }
     },
 
-    async addDirectoryToTree() {
-      const newDirectory = {
-        name: 'Nuevo directorio',
-        children: [],
-      };
-      this.treeData.files.push(newDirectory);
-    },
-    async addFileToTree() {
-      const newFile = {
-        name: 'Nuevo archivo',
-        type: 'file',
-      };
-      this.treeData.files.push(newFile);
-    },
+    // async addDirectoryToTree() {
+    //   const newDirectory = {
+    //     name: 'Nuevo directorio',
+    //     children: [],
+    //   };
+    //   this.treeData.files.push(newDirectory);
+    // },
+    // async addFileToTree() {
+    //   const newFile = {
+    //     name: 'Nuevo archivo',
+    //     type: 'file',
+    //   };
+    //   this.treeData.files.push(newFile);
+    // },
     async DelFoldAct (node) {
-      console.log('wwwwwwwwwwwwwwwwwwww RemoveDirectoryAct wwwwwwwwwwwwwwwwwwwwwwww');
-      console.log('node wwwwwwwwwwwwwwwwwwwwwwwwwwww', node);
+      console.log('RemoveDirectoryAct');
+      console.log('node', node);
 
-      if (node.name === 'root' && node.type === 'directory') {
-        console.log('node.name wwwwwwwwwwwwwwwwwwwwwwwwwwww', node.name);
-        console.log('node.type wwwwwwwwwwwwwwwwwwwwwwwwwwww', node.type);
-        this.treeData = {}
-        return { treeData: this.treeData, type: node.type, name: node.name }
+      if (node.root && node.type === 'directory') {
+        // Si el nodo es la carpeta raíz, simplemente limpiamos la estructura de datos treeData
+        this.treeData.files = [];
+        this.treeData = {};
+        this.treeData = null
+        console.log('Directory root removed successfully.');
+        // return 'Directory root removed successfully.';
+        return this.treeData
       } else {
         let removed = false;
 
@@ -214,12 +255,12 @@ export const useAppStore = defineStore('app', {
 
         if (removed) {
           console.log('Directory removed successfully.');
-          return 'Directory removed successfully.'
+          return 'Directory removed successfully.';
         } else {
-          console.log('Directory not found.')
-          return 'Directory not found.'
+          console.log('Directory not found.');
+          return 'Directory not found.';
         }
-      }      
+      }
     },
     async RenameFoldAct (node, newName) {
       console.log('0000000000000 RenameFoldAct 000000000000')
@@ -283,45 +324,47 @@ export const useAppStore = defineStore('app', {
           stack.push(...current.files);
         }
       }
+    },
+
+    AddFileAct(parentNode, fileName) {
+      const newFile = {
+        id: generateRandomId(), // Genera un ID único
+        name: fileName,
+        type: 'file',
+        content: '' // Puedes inicializar el contenido aquí si lo deseas
+      };
+      parentNode.files.push(newFile);
+      return newFile;
+    },
+    AddFoldAct(parentNode, folderName) {
+      const newFolder = {
+        id: generateRandomId(), // Genera un ID único
+        name: folderName,
+        type: 'directory',
+        files: []
+      };
+      parentNode.files.push(newFolder);
+      return newFolder;
+    },
+    AddRootAct() {
+      this.treeData = {
+        id: generateRandomId(), // Genera un ID único
+        name: 'root',
+        type: 'directory',
+        isRoot: true,
+        files: [{}]
+      };
     }
   }
 })
 
-let treeData = {
-  'id': 1,
-  'name': 'root',
-  'type': 'directory',
-  'files': [
-    {
-      'id': 2,
-      'name': 'folder1',
-      'type': 'directory',
-      'files': [
-        {
-          'id': 3,
-          'name': 'file1.txt',
-          'type': 'file',
-          'content': 'Contenido del archivo 1'
-        },
-        {
-          'id': 4,
-          'name': 'file2.txt',
-          'type': 'file',
-          'content': 'Contenido del archivo 2'
-        }
-      ]
-    },
-    {
-      'id': 5,
-      'name': 'folder2',
-      'type': 'directory',
-      'files': []
-    },
-    {
-      'id': 6,
-      'name': 'file3.txt',
-      'type': 'file',
-      'content': 'Contenido del archivo 3'
-    }
-  ]
+const generateRandomId = () => {
+  const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let newId = '';
+  for (let i = 0; i < 24; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    newId += chars[randomIndex];
+  }
+  console.log('newId:', newId);
+  return newId;
 }

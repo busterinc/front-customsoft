@@ -4,28 +4,9 @@
         <div>
             <h2>Árbol de archivos</h2>
             <ul>
-                <TreeNode :node="treeData" />
+              <TreeNode :node="treeData" />
+              <!-- <TreeNode :node="treeData.files.length > 0 && treeData.root ? treeData : null" /> -->
             </ul>
-            <v-btn
-                class="text-none"
-                append-icon="mdi-directory"
-                variant="outlined"
-                rounded="xl"
-                @click="addDirectory"
-                extended
-            >
-                Agregar directorio
-            </v-btn>
-            <v-btn
-                class="text-none"
-                append-icon="mdi-file"
-                variant="outlined"
-                rounded="xl"
-                @click="addFile"
-                extended
-            >
-                Agregar archivo
-            </v-btn>
         </div>  
     </div>
   </template>
@@ -46,28 +27,8 @@ export default defineComponent({
       const store = useAppStore();
       const { treeData } = store;
   
-      const addDirectory = () => {
-        store.addDirectoryToTree();
-      };
-  
-      const addFile = () => {
-        store.addFileToTree();
-      };
-  
-    //   const deleteNode = (node) => {
-    //     store.deleteNode(node);
-    //   };
-  
-    //   const renameNode = (node, newName) => {
-    //     store.renameNode(node, newName);
-    //   };
-  
       return {
         treeData,
-        addDirectory,
-        addFile,
-        // deleteNode,
-        // renameNode,
       };
     },
 });

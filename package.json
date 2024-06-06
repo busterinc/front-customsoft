@@ -13,6 +13,7 @@
     "pdfjs-dist": "^4.3.136",
     "pinia-plugin-persist": "^1.0.0",
     "roboto-fontface": "*",
+    "uuid": "^9.0.1",
     "vue": "^3.4.0",
     "vuetify": "^3.5.0",
     "vuex": "^4.1.0"
