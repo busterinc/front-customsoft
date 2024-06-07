@@ -22,44 +22,90 @@ export const useAppStore = defineStore('app', {
     docList: JSON.parse(localStorage.getItem('docList')) || [],
     userEmail: localStorage.getItem('userEmail') || null,
     treeData: {
-      'id': 'd2c9e8b5a3f6',
-      'name': 'root',
-      'type': 'directory',
-      'root': true,
-      'files': [
+      "id": "d2c9e8b5a3f6",
+      "name": "root",
+      "type": "directory",
+      "root": true,
+      "date": "2021-01-01",
+      "icon": "mdi-folder",
+      "files": [
         {
-          'id': 'a3f8c5e9b9d4',
-          'name': 'folder1',
-          'type': 'directory',
-          'files': [
+          "id": "a3f8c5e9b9d4",
+          "name": "downloads",
+          "type": "directory",
+          "date": "2021-01-05",
+          "icon": "mdi-folder",
+          "files": [
             {
-              'id': 'd5b1e9c7e6c8',
-              'name': 'file1.txt',
-              'type': 'file',
-              'content': 'Contenido del archivo 1'
+              "id": "d5b1e9c7e6c8",
+              "name": "alien.png",
+              "type": "file",
+              "date": "2021-01-10",
+              "extension": "png",
+              "icon": "mdi-file-image"
             },
             {
-              'id': '4a1c9d0e7b6f4a1c9e7',
-              'name': 'file2.txt',
-              'type': 'file',
-              'content': 'Contenido del archivo 2'
+              "id": "4a1c9d0e7b6f4a1c9e7",
+              "name": "file2.txt",
+              "type": "file",
+              "date": "2021-01-15",
+              "extension": "txt",
+              "icon": "mdi-file-document-outline"
+            },
+            {
+              "id": "6b2a1d9c8e7f4b3c5d",
+              "name": "notes.docx",
+              "type": "file",
+              "date": "2021-01-20",
+              "extension": "docx",
+              "icon": "mdi-file-document"
             }
           ]
         },
         {
-          'id': '3d2c9e8b5a3f6b2d5a',
-          'name': 'folder2',
-          'type': 'directory',
-          'files': []
+          "id": "3d2c9e8b5a3f6b2d5a",
+          "name": "back_up",
+          "type": "directory",
+          "date": "2021-01-08",
+          "icon": "mdi-folder",
+          "files": [
+            {
+              "id": "b9a8c7d6e5f4a3b2c1",
+              "name": "picture.jpg",
+              "type": "file",
+              "date": "2021-01-12",
+              "extension": "jpg",
+              "icon": "mdi-file-image-outline"
+            },
+            {
+              "id": "9e8d7c6b5a4f3e2d1",
+              "name": "document.pdf",
+              "type": "file",
+              "date": "2021-01-18",
+              "extension": "pdf",
+              "icon": "mdi-file-document-outline"
+            }
+          ]
         },
         {
-          'id': '8b0a9a2f9c3e5b7d6b',
-          'name': 'file3.txt',
-          'type': 'file',
-          'content': 'Contenido del archivo 3'
+          "id": "8b0a9a2f9c3e5b7d6b",
+          "name": "tutorial_vuejs3.wav",
+          "type": "file",
+          "date": "2021-01-25",
+          "extension": "wav",
+          "icon": "mdi-file-music"
+        },
+        {
+          "id": "f4e3d2c1b0a9f8e7d6",
+          "name": "work",
+          "type": "directory",
+          "date": "2021-01-03",
+          "icon": "mdi-folder",
+          "files": []
         }
       ]
-    }
+    },
+    searchRslt: JSON.parse(localStorage.getItem('searchRslt')) || [],
   }),
   actions: {
     async GetTestAct () {
@@ -206,29 +252,15 @@ export const useAppStore = defineStore('app', {
       }
     },
 
-    // async addDirectoryToTree() {
-    //   const newDirectory = {
-    //     name: 'Nuevo directorio',
-    //     children: [],
-    //   };
-    //   this.treeData.files.push(newDirectory);
-    // },
-    // async addFileToTree() {
-    //   const newFile = {
-    //     name: 'Nuevo archivo',
-    //     type: 'file',
-    //   };
-    //   this.treeData.files.push(newFile);
-    // },
     async DelFoldAct (node) {
       console.log('RemoveDirectoryAct');
       console.log('node', node);
 
       if (node.root && node.type === 'directory') {
         // Si el nodo es la carpeta raíz, simplemente limpiamos la estructura de datos treeData
+        console.log('this.treeData................', this.treeData)
         this.treeData.files = [];
-        this.treeData = {};
-        this.treeData = null
+        console.log('this.treeData................', this.treeData)
         console.log('Directory root removed successfully.');
         // return 'Directory root removed successfully.';
         return this.treeData
@@ -326,34 +358,74 @@ export const useAppStore = defineStore('app', {
       }
     },
 
-    AddFileAct(parentNode, fileName) {
+    async AddFileAct(parentNode, fileName) {
       const newFile = {
         id: generateRandomId(), // Genera un ID único
         name: fileName,
         type: 'file',
-        content: '' // Puedes inicializar el contenido aquí si lo deseas
+        date: getDate(),
+        extension: getXtension(fileName),
+        icon: 'mdi-file-document-outline'
       };
       parentNode.files.push(newFile);
+      console.log('newFile::', newFile)
       return newFile;
     },
-    AddFoldAct(parentNode, folderName) {
+    async AddFoldAct(parentNode, folderName) {
       const newFolder = {
         id: generateRandomId(), // Genera un ID único
         name: folderName,
         type: 'directory',
-        files: []
+        date: getDate(),
+        icon: 'mdi-folder',
+        files: [],
       };
       parentNode.files.push(newFolder);
+      console.log('newFolder::', newFolder)
       return newFolder;
     },
-    AddRootAct() {
+    async AddRootAct() {
       this.treeData = {
         id: generateRandomId(), // Genera un ID único
         name: 'root',
         type: 'directory',
         isRoot: true,
-        files: [{}]
+        date: getDate(),
+        icon: 'mdi-folder',
+        files: []
       };
+    },
+    async GetSerachingAct(searchTerm) {
+      console.log('searchTerm:', searchTerm);
+
+      if (!this.treeData || typeof this.treeData !== 'object') {
+        console.error('El objeto treeData no está definido o no es válido.');
+        return [];
+      }
+    
+      // Iniciamos un array vacío para almacenar los resultados
+      let results = [];
+    
+      // Función recursiva para buscar en el árbol
+      async function search(node, term) {
+        // Comprobamos si el nombre del nodo contiene el término de búsqueda
+        if (node.name.toLowerCase().includes(term.toLowerCase())) {
+          results.push(node);
+        }
+        // Si el nodo tiene archivos dentro, iteramos sobre ellos y los buscamos
+        if (node.files && node.files.length > 0) {
+          node.files.forEach(childNode => {
+            search(childNode, term);
+          });
+        }
+      }
+    
+      // Llamamos a la función de búsqueda con el árbol y el término de búsqueda
+      await search(this.treeData, searchTerm);
+
+      console.log('results ############################', results)
+      this.searchRslt = results
+      return results
     }
   }
 })
@@ -367,4 +439,23 @@ const generateRandomId = () => {
   }
   console.log('newId:', newId);
   return newId;
+}
+
+const getDate = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // Añade cero inicial si es necesario
+  const day = String(now.getDate()).padStart(2, '0'); // Añade cero inicial si es necesario
+
+  const formattedDate = `${year}-${month}-${day}`;
+  console.log(formattedDate);
+  return formattedDate
+}
+
+const getXtension = (fileName) => {
+  const parts = fileName.split('.');
+  const extension = parts[parts.length - 1];
+
+  console.log(extension);
+  return extension
 }

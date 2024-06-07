@@ -1,5 +1,5 @@
 <template>
-  <li v-if="node">
+  <li v-if="node && searchRslt.length === 0">
     <span :class="node.type === 'directory' ? 'folder' : 'file'">
       <i :class="node.type === 'directory' ? 'mdi mdi-folder' : 'mdi mdi-file'"></i>
       {{ node.name }}
@@ -35,6 +35,11 @@
       <TreeNode v-for="child in node.files" :key="child.id" :node="child" />
     </ul>
   </li>
+  <div v-else-if="searchRslt" v-for="list in searchRslt" :key="list.id">
+    <v-icon>{{ list.icon }}</v-icon>
+    <i v-if="list.type === 'directory'">{{ list.name }} || {{ list.date }}</i>
+    <i v-else>{{ list.name }} || {{ list.date }} || {{ list.extension }}</i>
+  </div>
   <div v-else>
     --{{ node }}--
     <i>No existe ninguna carpeta o archivo</i>
@@ -51,15 +56,23 @@
 import { useAppStore } from '../stores/app.js';
 import { ref, watch, watchEffect } from 'vue'; // Importa ref y watch de Vue
 
+import {storeToRefs} from 'pinia'
+
 export default {
   name: 'TreeNode',
   props: {
     node: Object,
+    filter: String,
+    search: String,
   },
   setup(props, { emit }) {
     const store = useAppStore();
+    const { searchRslt } = storeToRefs(store);
 
-    // const dir = ref(props.node);
+    // const filt = ref(props.filter);
+    // const srch = ref(props.search);
+    const searchList = ref([]);
+    
 
     const deleteFolder = async (node) => {
       const payload = await store.DelFoldAct(node);
@@ -105,14 +118,33 @@ export default {
       console.log('addRoot newRoot...................', newRoot);
     };
 
-    watchEffect(() => {
+    watchEffect( async () => {
       console.log('Node changed +++++++++++++++++++++++', props.node);
+      console.log('Node changed +++++++++++++++++++++++', props.filter);
+      console.log('Node changed +++++++++++++++++++++++', props.search);
+
+      if (props.search) {
+        const searchList = await store.GetSerachingAct(props.search)
+        console.log('searchList +++++++++++++++++++++++', searchList);
+      } else {
+        store.searchRslt = [];
+      }
     });
 
-    // watch(() => props.node, (newValue) => {
-    //   dir.value = newValue;
+    // watch(() => props.filter, (newValue) => {
     //   console.log('newValue +++++++++++++++++++++++', newValue);
-    //   console.log('dir.value +++++++++++++++++++++++', dir.value);
+    //   filt.value = newValue;
+    //   console.log('filt.value +++++++++++++++++++++++', filt.value);
+
+    //   // filterNodes(filt.value);
+    // });
+
+    // watch(() => props.search, (newValue) => {
+    //   console.log('newValue +++++++++++++++++++++++', newValue);
+    //   srch.value = newValue;
+    //   console.log('srch.value +++++++++++++++++++++++', srch.value);
+
+    //   store.GetSerachingAct(newValue)
     // });
 
     return {
@@ -123,7 +155,10 @@ export default {
       addFolder,
       addFile,
       addRoot,
-      // dir,
+      searchRslt,
+      // srch,
+      // filt,
+      searchList,
     };
   },
 };
